@@ -1,37 +1,32 @@
 #include <linux/kernel.h>
+#include <linux/string.h>
 #include <linux/module.h>
 #include <linux/init.h>
-
-#include <linux/of_address.h>
-#include <linux/of_device.h>
-#include <linux/of_platform.h>
-
-#include <linux/version.h>
-#include <linux/types.h>
-#include <linux/kdev_t.h>
 #include <linux/fs.h>
-#include <linux/device.h>
+#include <linux/types.h>
 #include <linux/cdev.h>
-
+#include <linux/kdev_t.h>
 #include <linux/uaccess.h>
-
+#include <linux/errno.h>
+#include <linux/device.h>
 
 #include <linux/io.h> //iowrite ioread
-#include <linux/slab.h>
-#include <linux/platform_device.h>
+#include <linux/slab.h>//kmalloc kfree
+#include <linux/platform_device.h>//platform driver
+#include <linux/of.h>//of_match_table
 #include <linux/ioport.h>//ioremap
 
+MODULE_AUTHOR ("FTN");
+MODULE_DESCRIPTION("Test Driver for VGA controller IP.");
+MODULE_LICENSE("Dual BSD/GPL");
+MODULE_ALIAS("custom:vga controller");
 
-
- MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("Driver for VGA ouvput");
 #define DEVICE_NAME "vga"
 #define DRIVER_NAME "vga_driver"
 #define BUFF_SIZE 20
 
 
 //*******************FUNCTION PROTOTYPES************************************
-
 static int vga_probe(struct platform_device *pdev);
 static int vga_open(struct inode *i, struct file *f);
 static int vga_close(struct inode *i, struct file *f);
@@ -47,6 +42,7 @@ struct vga_info {
   unsigned long mem_end;
   void __iomem *base_addr;
 };
+
 static struct cdev *my_cdev;
 static dev_t my_dev_id;
 static struct class *my_class;
@@ -81,9 +77,7 @@ MODULE_DEVICE_TABLE(of, vga_of_match);
 
 
 //***************************************************************************
-
 // PROBE AND REMOVE
-
 static int vga_probe(struct platform_device *pdev)
 {
   struct resource *r_mem;
@@ -150,22 +144,24 @@ static int vga_remove(struct platform_device *pdev)
 
 //***************************************************
 // IMPLEMENTATION OF FILE OPERATION FUNCTIONS
-
 static int vga_open(struct inode *i, struct file *f)
 {
   //printk(KERN_INFO "vga opened\n");
   return 0;
 }
+
 static int vga_close(struct inode *i, struct file *f)
 {
   //printk(KERN_INFO "vga closed\n");
   return 0;
 }
+
 static ssize_t vga_read(struct file *f, char __user *buf, size_t len, loff_t *off)
 {
   //printk("vga read\n");
   return 0;
 }
+
 static ssize_t vga_write(struct file *f, const char __user *buf, size_t length, loff_t *off)
 {	
   char buff[BUFF_SIZE];
@@ -282,7 +278,3 @@ static void __exit vga_exit(void)
 module_init(vga_init);
 module_exit(vga_exit);
 
-MODULE_AUTHOR ("FTN");
-MODULE_DESCRIPTION("Test Driver for VGA output.");
-MODULE_LICENSE("GPL v2");
-MODULE_ALIAS("custom:vga");
