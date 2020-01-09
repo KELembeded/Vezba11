@@ -93,10 +93,10 @@ static int vga_probe(struct platform_device *pdev)
   // Get memory for structure vga_info
   vp = (struct vga_info *) kmalloc(sizeof(struct vga_info), GFP_KERNEL);
   if (!vp) {
-    printk(KERN_ALERT "vga_probe: Could not allocate timer device\n");
+    printk(KERN_ALERT "vga_probe: Could not allocate memory for structure vga_info\n");
     return -ENOMEM;
   }
-  // Put phisical adresses in timer_info structure
+  // Put phisical adresses in vga_info structure
   vp->mem_start = r_mem->start;
   vp->mem_end = r_mem->end;
     
@@ -222,24 +222,24 @@ static int __init vga_init(void)
   ret = alloc_chrdev_region(&my_dev_id, 0, 1, "VGA_region");
   if (ret)
   {
-    printk(KERN_ALERT "<1>Failed CHRDEV!.\n");
+    printk(KERN_ALERT "vga_init: Failed CHRDEV!.\n");
     return -1;
   }
-  printk(KERN_INFO "Succ CHRDEV!.\n");
+  printk(KERN_INFO "vga_init: Successful allocation of CHRDEV!\n");
   my_class = class_create(THIS_MODULE, "VGA_drv");
   if (my_class == NULL)
   {
-    printk(KERN_ALERT "<1>Failed class create!.\n");
+    printk(KERN_ALERT "vga_init: Failed class create!.\n");
     goto fail_0;
   }
-  printk(KERN_INFO "Succ class chardev1 create!.\n");
+  printk(KERN_INFO "vga_init: Successful class chardev create!.\n");
   my_device = device_create(my_class, NULL, MKDEV(MAJOR(my_dev_id),0), NULL, "vga");
   if (my_device == NULL)
   {
     goto fail_1;
   }
 
-  printk(KERN_INFO "Device created.\n");
+  printk(KERN_INFO "vga_init: Device created.\n");
 
   my_cdev = cdev_alloc();	
   my_cdev->ops = &my_fops;
@@ -250,7 +250,7 @@ static int __init vga_init(void)
     printk(KERN_ERR "VGA_init: Failed to add cdev\n");
     goto fail_2;
   }
-  printk(KERN_INFO "VGA Device init.\n");
+  printk(KERN_INFO "VGA_init: Init Device \"%s\".\n");
 
   return platform_driver_register(&vga_driver);
 
