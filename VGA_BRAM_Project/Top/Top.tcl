@@ -151,5 +151,13 @@ launch_runs impl_1 -to_step write_bitstream -jobs 4
 #exporting hardware
 wait_on_run impl_1
 update_compile_order -fileset sources_1
-file mkdir $resultDir/VGA_BRAM_controller.sdk
-file copy -force $resultDir/VGA_BRAM_controller.runs/impl_1/VGA_BRAM_controller_wrapper.sysdef $resultDir/VGA_BRAM_controller.sdk/VGA_BRAM_controller_wrapper.hdf
+
+
+set version [version -short]
+
+if {$version < 2019.2} {
+    file mkdir $resultDir/VGA_BRAM_controller.sdk
+    file copy -force $resultDir/VGA_BRAM_controller.runs/impl_1/VGA_BRAM_controller_wrapper.sysdef $resultDir/VGA_BRAM_controller.sdk/VGA_DMA_controller_wrapper.hdf
+} else {
+    write_hw_platform -fixed -force  -include_bit -file $resultDir/VGA_BRAM_controller_wrapper.xsa
+}
