@@ -146,6 +146,7 @@ connect_bd_net [get_bd_pins VGA_IP_0/reset] [get_bd_pins rst_ps7_0_100M/peripher
 connect_bd_net [get_bd_pins VGA_IP_0/clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
 connect_bd_net [get_bd_pins blk_mem_gen_0/clkb] [get_bd_pins processing_system7_0/FCLK_CLK0]
 connect_bd_net [get_bd_pins blk_mem_gen_0/doutb] [get_bd_pins xlslice_0/Din]
+connect_bd_net [get_bd_pins xlconcat_0/dout] [get_bd_pins blk_mem_gen_0/addra]
 
 #add constraint file
 add_files -fileset constrs_1 -norecurse Top.xdc
