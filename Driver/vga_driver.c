@@ -59,7 +59,7 @@ static struct file_operations my_fops =
     .write = vga_write
   };
 static struct of_device_id vga_of_match[] = {
-  { .compatible = "bram_gpio", },
+  { .compatible = "vga_bram_ctrl", },
   { /* end of list */ },
 };
 
@@ -82,6 +82,7 @@ static int vga_probe(struct platform_device *pdev)
 {
   struct resource *r_mem;
   int rc = 0;
+  int i = 0;
 
   printk(KERN_INFO "Probing\n");
   // Get phisical register adress space from device tree
@@ -131,8 +132,7 @@ static int vga_remove(struct platform_device *pdev)
   // Exit Device Module
   for (i = 0; i < (256*144); i++) 
   { 
-    iowrite32(i*4, vp->base_addr + 8); 
-    iowrite32(0, vp->base_addr); 
+    iowrite32(0, vp->base_addr + i*4); 
   } 
   printk(KERN_INFO "VGA_remove: Vga remove in process");
   iounmap(vp->base_addr);
@@ -192,8 +192,7 @@ static ssize_t vga_write(struct file *f, const char __user *buf, size_t length, 
     }
     else
     {
-      iowrite32((256*ypos + xpos)*4, vp->base_addr + 8);
-      iowrite32(rgb, vp->base_addr);      
+      iowrite32(rgb, vp->base_addr + (256*ypos + xpos)*4);
     }
   }
   else
