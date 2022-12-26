@@ -51,32 +51,42 @@
 #include "xil_printf.h"
 #include "xil_cache.h"
 #include "xil_io.h"
+#include "xil_mmu.h"
 #include "xbasic_types.h"
 #include "sleep.h"
-#include "lena.h"
+#include "test.h"
+
+#define USE_MMAP
 
 int main()
 {
-	int i;
+
     init_platform();
 
     print("Hello World\n\r");
     Xil_DCacheDisable();
     Xil_ICacheDisable();
+#ifdef USE_MMAP
+    Xil_SetTlbAttributes(XPA R_AXI_BRAM_CTRL_0_S_AXI_BASEADDR, 0x15de6);
+#endif
 
     //TESTING LEDS
-    Xil_Out32(XPAR_MYLED_0_BASEADDR, 15);
+    Xil_Out32(XPAR_AXI_GPIO_0_BASEADDR, 15);
     usleep(1000000);
-    Xil_Out32(XPAR_MYLED_0_BASEADDR, 0);
+    Xil_Out32(XPAR_AXI_GPIO_0_BASEADDR, 0);
 
 
+#ifdef USE_MMAP
+    memcpy((void *)XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR,image,36864*4);
+#else
+    for(int i = 0; i<=36864; i++)
+            {
+        		Xil_Out32(XPAR_AXI_BRAM_CTRL_0_S_AXI_BASEADDR + (i*4), image[i]);
+            }
+#endif
+        //TESTING VGA
 
-    //TESTING VGA
-    for(i = 0; i<=36864; i++)
-    {
-		Xil_Out32(XPAR_AXI_GPIO_0_BASEADDR + 8, i*4);
-		Xil_Out32(XPAR_AXI_GPIO_0_BASEADDR, lena[i]);
-    }
+
 
 	while(1)
         usleep(1000000);
